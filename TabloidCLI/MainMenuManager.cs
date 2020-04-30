@@ -33,7 +33,7 @@ namespace TabloidCLI
                 case "1": return new JournalManager(this, CONNECTION_STRING);
                 case "2": return this;
                 case "3": return this;
-                case "4": return this;
+                case "4": return new PostManager(this, CONNECTION_STRING);
                 case "5": return this;
                 case "0": return null;
                 default:

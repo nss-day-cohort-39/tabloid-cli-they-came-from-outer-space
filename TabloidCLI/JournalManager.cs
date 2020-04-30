@@ -5,16 +5,13 @@ using TabloidCLI.Models;
 
 namespace TabloidCLI
 {
-    public class JournalManager : IUserInterfaceManager
+    public class JournalManager : DatabaseEntityManager, IUserInterfaceManager
     {
-        private readonly string _connectionString;
         private readonly IUserInterfaceManager _parentUI;
-        private SqlConnection Connection => new SqlConnection(_connectionString);
 
-        public JournalManager(IUserInterfaceManager parentUI, string connectionString)
+        public JournalManager(IUserInterfaceManager parentUI, string connectionString) : base(connectionString)
         {
             _parentUI = parentUI;
-            _connectionString = connectionString;
         }
 
         public IUserInterfaceManager Execute()
@@ -38,7 +35,7 @@ namespace TabloidCLI
                 case "3":
                     Remove();
                     return this;
-                case "0": 
+                case "0":
                     return _parentUI;
                 default:
                     Console.WriteLine("Invalid Selection");

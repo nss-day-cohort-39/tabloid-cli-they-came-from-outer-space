@@ -48,7 +48,7 @@ namespace TabloidCLI
 
         private void List()
         {
-            List<Post> posts = GetAllPostPosts();
+            List<Post> posts = GetAllPost();
             foreach (Post post in posts)
             {
                 Console.WriteLine(post);
@@ -70,17 +70,52 @@ namespace TabloidCLI
             Console.Write("Published Date: ");
             post.PublishDateTime = DateTime.Parse(Console.ReadLine());
 
-            post.Author = new Author() { Id = 1 };
-            post.Blog = new Blog() { Id = 1 };
+            post.Author = ChooseAuthor();
+            while (post.Author == null)
+            {
+                post.Author = ChooseAuthor();
+            }
+
+            post.Blog = ChooseBlog();
 
             Insert(post);
+        }
+
+        private Author ChooseAuthor()
+        {
+            Console.WriteLine("Who wrote this post?");
+            List<Author> authors = GetAllAuthors();
+
+            for (int i=0; i<authors.Count; i++)
+            {
+                Author author = authors[i];
+                Console.WriteLine($" {i + 1}) {author.FullName}");
+            }
+
+            Console.Write("> ");
+            string input = Console.ReadLine();
+            try
+            {
+                int choice = int.Parse(input);
+                return authors[choice - 1];
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection.");
+                return null;
+            }
+        }
+
+        private Blog ChooseBlog()
+        {
+            return new Blog() { Id = 1 };
         }
 
         private void Remove()
         {
             Console.WriteLine("Which journal post would you like to remove?");
 
-            List<Post> posts = GetAllPostPosts();
+            List<Post> posts = GetAllPost();
 
             for (int i=0; i<posts.Count; i++)
             {
@@ -101,7 +136,7 @@ namespace TabloidCLI
             }
         }
 
-        private List<Post> GetAllPostPosts()
+        private List<Post> GetAllPost()
         {
             using (SqlConnection conn = Connection)
             {
@@ -157,6 +192,41 @@ namespace TabloidCLI
                 }
             }
         }
+
+        private List<Author> GetAllAuthors()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT id,
+                                               FirstName,
+                                               LastName,
+                                               Bio
+                                          FROM Author";
+
+                    List<Author> authors = new List<Author>();
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        authors.Add(new Author()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            Bio = reader.GetString(reader.GetOrdinal("Bio")),
+                        });
+                    }
+
+                    reader.Close();
+
+                    return authors;
+                }
+            }
+        }
+
 
         private void Insert(Post post)
         {

@@ -1,22 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace TabloidCLI
 {
-    public enum UICommand
-    {
-        List,
-        Details,
-        Add,
-        Edit,
-        Delete,
-
-        ReturnToMainMenu,
-        ExitProgram,
-    }
-
     public class MainMenuManager : IUserInterfaceManager
     {
         private const string CONNECTION_STRING = @"Data Source=localhost\SQLEXPRESS;Database=TabloidCLI;Integrated Security=True";
@@ -42,7 +27,6 @@ namespace TabloidCLI
             Console.WriteLine(" 0) Exit");
 
             Console.Write("> ");
-
             string choice = Console.ReadLine();
             switch (choice)
             {

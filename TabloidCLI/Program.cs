@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TabloidCLI
+﻿namespace TabloidCLI
 {
     class Program
     {

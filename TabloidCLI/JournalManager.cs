@@ -27,7 +27,6 @@ namespace TabloidCLI
 
             Console.Write("> ");
             string choice = Console.ReadLine();
-
             switch (choice)
             {
                 case "1":

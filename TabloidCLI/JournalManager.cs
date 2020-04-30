@@ -20,32 +20,27 @@ namespace TabloidCLI
         public IUserInterfaceManager Execute()
         {
             Console.WriteLine("Journal Menu");
-
             Console.WriteLine(" 1) List Entires");
             Console.WriteLine(" 2) Add Entry");
             Console.WriteLine(" 3) Remove Entry");
             Console.WriteLine(" 0) Return to Main Menu");
 
             Console.Write("> ");
-            string input = Console.ReadLine();
-            if (!int.TryParse(input, out var choice))
-            {
-                Console.WriteLine("Invalid Selection");
-                return this;
-            }
+            string choice = Console.ReadLine();
 
             switch (choice)
             {
-                case 1:
+                case "1":
                     List();
                     return this;
-                case 2:
+                case "2":
                     Add();
                     return this;
-                case 3:
+                case "3":
                     Remove();
                     return this;
-                case 0: return _parentUI;
+                case "0": 
+                    return _parentUI;
                 default:
                     Console.WriteLine("Invalid Selection");
                     return this;

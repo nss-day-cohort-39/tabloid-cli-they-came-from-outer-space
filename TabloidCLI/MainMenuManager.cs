@@ -43,21 +43,15 @@ namespace TabloidCLI
 
             Console.Write("> ");
 
-            string input = Console.ReadLine();
-            if (!int.TryParse(input, out var choice))
-            {
-                Console.WriteLine("Invalid Selection");
-                return this;
-            }
-
+            string choice = Console.ReadLine();
             switch (choice)
             {
-                case 1: return new JournalManager(this, CONNECTION_STRING);
-                case 2: return this;
-                case 3: return this;
-                case 4: return this;
-                case 5: return this;
-                case 0: return null;
+                case "1": return new JournalManager(this, CONNECTION_STRING);
+                case "2": return this;
+                case "3": return this;
+                case "4": return this;
+                case "5": return this;
+                case "0": return null;
                 default:
                     Console.WriteLine("Invalid Selection");
                     return this;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text;
+using Microsoft.Data.SqlClient;
+using TabloidCLI.Models;
 
 namespace TabloidCLI
 {
@@ -9,6 +9,7 @@ namespace TabloidCLI
     {
         private readonly string _connectionString;
         private readonly IUserInterfaceManager _parentUI;
+        private SqlConnection Connection => new SqlConnection(_connectionString);
 
         public JournalManager(IUserInterfaceManager parentUI, string connectionString)
         {
@@ -18,43 +19,160 @@ namespace TabloidCLI
 
         public IUserInterfaceManager Execute()
         {
-            UICommand command = Menu();
-            if (command == UICommand.ReturnToMainMenu)
-            {
-                return _parentUI;
-            }
-
-            return this;
-        }
-
-        public UICommand Menu()
-        {
             Console.WriteLine("Journal Menu");
 
-            while (true)
+            Console.WriteLine(" 1) List Entires");
+            Console.WriteLine(" 2) Add Entry");
+            Console.WriteLine(" 3) Remove Entry");
+            Console.WriteLine(" 0) Return to Main Menu");
+
+            Console.Write("> ");
+            string input = Console.ReadLine();
+            if (!int.TryParse(input, out var choice))
             {
-                Console.WriteLine(" 1) List Entires");
-                Console.WriteLine(" 2) Add Entry");
-                Console.WriteLine(" 3) Delete Entry");
-                Console.WriteLine(" 0) Return to Main Menu");
+                Console.WriteLine("Invalid Selection");
+                return this;
+            }
 
-                Console.Write("> ");
-                string input = Console.ReadLine();
-                if (!int.TryParse(input, out var choice))
-                {
+            switch (choice)
+            {
+                case 1:
+                    List();
+                    return this;
+                case 2:
+                    Add();
+                    return this;
+                case 3:
+                    Remove();
+                    return this;
+                case 0: return _parentUI;
+                default:
                     Console.WriteLine("Invalid Selection");
-                    continue;
-                }
+                    return this;
+            }
+        }
 
-                switch (choice)
+        private void List()
+        {
+            List<Journal> entries = GetAllJournalEntries();
+            foreach (Journal entry in entries)
+            {
+                Console.WriteLine(entry);
+            }
+        }
+
+        private void Add()
+        {
+            Console.WriteLine("New Journal Entry");
+
+            Journal entry = new Journal();
+
+            Console.Write("Title: ");
+            entry.Title = Console.ReadLine();
+
+            Console.WriteLine("Content: ");
+            entry.Content = "";
+            string content = Console.ReadLine();
+            while (!string.IsNullOrWhiteSpace(content))
+            {
+                entry.Content += content + "\n";
+                content = Console.ReadLine();
+            }
+
+            entry.CreateDateTime = DateTime.Now;
+
+            Insert(entry);
+        }
+
+        private void Remove()
+        {
+            Console.WriteLine("Which journal entry would you like to remove?");
+
+            List<Journal> entries = GetAllJournalEntries();
+
+            for (int i=0; i<entries.Count; i++)
+            {
+                Journal entry = entries[i];
+                Console.WriteLine($" {i + 1}) {entry.Title}");
+            }
+
+            string input = Console.ReadLine();
+            try
+            {
+                int choice = int.Parse(input);
+                Journal entryToDelete = entries[choice - 1];
+                Delete(entryToDelete.Id);
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection. Won't remove any journal entries.");
+            }
+        }
+
+        private List<Journal> GetAllJournalEntries()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    case 1: return UICommand.List;
-                    case 2: return UICommand.Add;
-                    case 3: return UICommand.Delete;
-                    case 0: return UICommand.ReturnToMainMenu;
-                    default:
-                        Console.WriteLine("Invalid Selection");
-                        break;
+                    cmd.CommandText = @"SELECT id,
+                                               Title,
+                                               Content,
+                                               CreateDatetime
+                                          FROM Journal";
+
+                    List<Journal> entries = new List<Journal>();
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Journal entry = new Journal()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Content = reader.GetString(reader.GetOrdinal("Content")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                        };
+                        entries.Add(entry);
+                    }
+
+                    reader.Close();
+
+                    return entries;
+                }
+            }
+        }
+
+        private void Insert(Journal entry)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Journal (Title, Content, CreateDatetime )
+                                                     VALUES (@title, @content, @createDateTime)";
+                    cmd.Parameters.AddWithValue("@title", entry.Title);
+                    cmd.Parameters.AddWithValue("@content", entry.Content);
+                    cmd.Parameters.AddWithValue("@createDateTime", entry.CreateDateTime);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void Delete(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM Journal WHERE id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

@@ -6,20 +6,13 @@ namespace TabloidCLI
     {
         static void Main(string[] args)
         {
-            UIManager ui = new UIManager();
-            ui.ShowHeader();
+            MainMenuManager mainMenu = new MainMenuManager();
+            mainMenu.ShowHeader();
 
-            UICommand command = ui.MainMenu();
-            while (command != UICommand.ExitProgram)
+            IUserInterfaceManager ui = mainMenu;
+            while (ui != null)
             {
-                switch (command)
-                {
-                    case UICommand.JournalMainMenu:
-                        command = ui.JournalMenu();
-                        break;
-                }
-
-                command = ui.MainMenu();
+                ui = ui.Execute();
             }
         }
     }

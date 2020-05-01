@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using TabloidCLI.Models;
 
 namespace TabloidCLI
 {
-    public class TagManager : DatabaseEntityManager, IUserInterfaceManager
+    public class TagManager : IUserInterfaceManager
     {
         private readonly IUserInterfaceManager _parentUI;
+        private TagRepository _tagRepository;
 
-        public TagManager(IUserInterfaceManager parentUI, string connectionString) : base(connectionString)
+        public TagManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
+            _tagRepository = new TagRepository(connectionString);
         }
 
         public IUserInterfaceManager Execute()
@@ -51,7 +52,7 @@ namespace TabloidCLI
         {
             Console.WriteLine();
             Console.WriteLine("All Tags");
-            List<Tag> tags = GetAllTags();
+            List<Tag> tags = _tagRepository.GetAll();
             foreach (Tag tag in tags)
             {
                 Console.WriteLine(" " + tag);
@@ -68,16 +69,16 @@ namespace TabloidCLI
             Console.Write("> ");
             tag.Name = Console.ReadLine();
 
-            Insert(tag);
+            _tagRepository.Insert(tag);
         }
 
         private void Edit()
         {
             Console.WriteLine("Which tag would you like to edit?");
 
-            List<Tag> tags = GetAllTags();
+            List<Tag> tags = _tagRepository.GetAll();
 
-            for (int i=0; i<tags.Count; i++)
+            for (int i = 0; i < tags.Count; i++)
             {
                 Tag tag = tags[i];
                 Console.WriteLine($" {i + 1}) {tag.Name}");
@@ -94,9 +95,9 @@ namespace TabloidCLI
                 if (!string.IsNullOrWhiteSpace(newValue))
                 {
                     tagToEdit.Name = newValue;
-                    Update(tagToEdit);
+                    _tagRepository.Update(tagToEdit);
                 }
-            } 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Invalid Selection. Won't edit any tags.");
@@ -107,9 +108,9 @@ namespace TabloidCLI
         {
             Console.WriteLine("Which tag would you like to remove?");
 
-            List<Tag> tags = GetAllTags();
+            List<Tag> tags = _tagRepository.GetAll();
 
-            for (int i=0; i<tags.Count; i++)
+            for (int i = 0; i < tags.Count; i++)
             {
                 Tag tag = tags[i];
                 Console.WriteLine($" {i + 1}) {tag.Name}");
@@ -121,84 +122,11 @@ namespace TabloidCLI
             {
                 int choice = int.Parse(input);
                 Tag tagToDelete = tags[choice - 1];
-                Delete(tagToDelete.Id);
-            } 
+                _tagRepository.Delete(tagToDelete.Id);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Invalid Selection. Won't remove any tags.");
-            }
-        }
-
-        private List<Tag> GetAllTags()
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT id, Name FROM Tag"; 
-                    List<Tag> tags = new List<Tag>();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Tag tag = new Tag()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                        };
-                        tags.Add(tag);
-                    }
-
-                    reader.Close();
-
-                    return tags;
-                }
-            }
-        }
-
-        private void Insert(Tag tag)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"INSERT INTO Tag (Name) VALUES (@name)";
-                    cmd.Parameters.AddWithValue("@name", tag.Name);
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-        private void Update(Tag tag)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"UPDATE Tag SET Name = @name WHERE id = @id";
-                    cmd.Parameters.AddWithValue("@name", tag.Name);
-                    cmd.Parameters.AddWithValue("@id", tag.Id);
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
- 
-        private void Delete(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"DELETE FROM Tag WHERE id = @id";
-                    cmd.Parameters.AddWithValue("@id", id);
-
-                    cmd.ExecuteNonQuery();
-                }
             }
         }
     }

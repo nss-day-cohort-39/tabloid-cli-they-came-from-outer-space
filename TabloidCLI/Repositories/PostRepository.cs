@@ -66,40 +66,6 @@ namespace TabloidCLI.Repositories
             }
         }
 
-        public List<Author> GetAllAuthors()
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT id,
-                                               FirstName,
-                                               LastName,
-                                               Bio
-                                          FROM Author";
-
-                    List<Author> authors = new List<Author>();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        authors.Add(new Author()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            Bio = reader.GetString(reader.GetOrdinal("Bio")),
-                        });
-                    }
-
-                    reader.Close();
-
-                    return authors;
-                }
-            }
-        }
-
         public void Insert(Post post)
         {
             using (SqlConnection conn = Connection)

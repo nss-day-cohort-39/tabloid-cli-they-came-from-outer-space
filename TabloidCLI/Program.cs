@@ -1,4 +1,6 @@
-﻿namespace TabloidCLI
+﻿using TabloidCLI.UserInterfaceManagers;
+
+namespace TabloidCLI
 {
     class Program
     {

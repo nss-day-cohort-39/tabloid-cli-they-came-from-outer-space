@@ -45,6 +45,59 @@ namespace TabloidCLI
             }
         }
 
+        public Author Get(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT a.Id AS AuthorId,
+                                               a.FirstName,
+                                               a.LastName,
+                                               a.Bio,
+                                               t.Id AS TagId,
+                                               t.Name
+                                          FROM Author a 
+                                               LEFT JOIN AuthorTag at on a.Id = at.AuthorId
+                                               LEFT JOIN Tag t on t.Id = at.TagId
+                                         WHERE a.id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    Author author = null;
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        if (author == null)
+                        {
+                            author = new Author()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("AuthorId")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                Bio = reader.GetString(reader.GetOrdinal("Bio")),
+                            };
+                        }
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("TagId")))
+                        {
+                            author.Tags.Add(new Tag()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("TagId")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                            });
+                        }
+                    }
+
+                    reader.Close();
+
+                    return author;
+                }
+            }
+        }
+
         public void Insert(Author author)
         {
             using (SqlConnection conn = Connection)
@@ -63,6 +116,11 @@ namespace TabloidCLI
             }
         }
 
+        public void Update(Author entry)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Delete(int id)
         {
             using (SqlConnection conn = Connection)
@@ -77,5 +135,39 @@ namespace TabloidCLI
                 }
             }
         }
-    }
+
+        public void InsertTag(Author author, Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO AuthorTag (AuthorId, TagId)
+                                                       VALUES (@authorId, @tagId)";
+                    cmd.Parameters.AddWithValue("@authorId", author.Id);
+                    cmd.Parameters.AddWithValue("@tagId", tag.Id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteTag(int authorId, int tagId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM AuthorTAg 
+                                         WHERE AuthorId = @authorid AND 
+                                               TagId = @tagId";
+                    cmd.Parameters.AddWithValue("@authorId", authorId);
+                    cmd.Parameters.AddWithValue("@tagId", tagId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+     }
 }

@@ -1,4 +1,6 @@
-﻿namespace TabloidCLI.Models
+﻿using System.Collections.Generic;
+
+namespace TabloidCLI.Models
 {
     public class Author
     {
@@ -6,6 +8,7 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Bio { get; set; }
+        public List<Tag> Tags { get; set; } = new List<Tag>();
 
         public string FullName
         {

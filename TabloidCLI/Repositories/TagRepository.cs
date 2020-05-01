@@ -38,6 +38,34 @@ namespace TabloidCLI
             }
         }
 
+        public Tag Get(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT id, Name FROM Tag WHERE id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    Tag tag = null;
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        tag = new Tag()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                        };
+                    }
+
+                    reader.Close();
+
+                    return tag;
+                }
+            }
+        }
+
         public void Insert(Tag tag)
         {
             using (SqlConnection conn = Connection)

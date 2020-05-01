@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using TabloidCLI.Models;
 
 namespace TabloidCLI
 {
-    public class JournalManager : DatabaseEntityManager, IUserInterfaceManager
+    public class JournalManager : IUserInterfaceManager
     {
         private readonly IUserInterfaceManager _parentUI;
+        private JournalRepository _journalRepository;
 
-        public JournalManager(IUserInterfaceManager parentUI, string connectionString) : base(connectionString)
+        public JournalManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
+            _journalRepository = new JournalRepository(connectionString);
         }
 
         public IUserInterfaceManager Execute()
@@ -45,7 +46,7 @@ namespace TabloidCLI
 
         private void List()
         {
-            List<Journal> entries = GetAllJournalEntries();
+            List<Journal> entries = _journalRepository.GetAll();
             foreach (Journal entry in entries)
             {
                 Console.WriteLine(entry);
@@ -72,16 +73,16 @@ namespace TabloidCLI
 
             entry.CreateDateTime = DateTime.Now;
 
-            Insert(entry);
+            _journalRepository.Insert(entry);
         }
 
         private void Remove()
         {
             Console.WriteLine("Which journal entry would you like to remove?");
 
-            List<Journal> entries = GetAllJournalEntries();
+            List<Journal> entries = _journalRepository.GetAll();
 
-            for (int i=0; i<entries.Count; i++)
+            for (int i = 0; i < entries.Count; i++)
             {
                 Journal entry = entries[i];
                 Console.WriteLine($" {i + 1}) {entry.Title}");
@@ -92,79 +93,11 @@ namespace TabloidCLI
             {
                 int choice = int.Parse(input);
                 Journal entryToDelete = entries[choice - 1];
-                Delete(entryToDelete.Id);
-            } 
+                _journalRepository.Delete(entryToDelete.Id);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Invalid Selection. Won't remove any journal entries.");
-            }
-        }
-
-        private List<Journal> GetAllJournalEntries()
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT id,
-                                               Title,
-                                               Content,
-                                               CreateDatetime
-                                          FROM Journal";
-
-                    List<Journal> entries = new List<Journal>();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Journal entry = new Journal()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Title = reader.GetString(reader.GetOrdinal("Title")),
-                            Content = reader.GetString(reader.GetOrdinal("Content")),
-                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
-                        };
-                        entries.Add(entry);
-                    }
-
-                    reader.Close();
-
-                    return entries;
-                }
-            }
-        }
-
-        private void Insert(Journal entry)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"INSERT INTO Journal (Title, Content, CreateDatetime )
-                                                     VALUES (@title, @content, @createDateTime)";
-                    cmd.Parameters.AddWithValue("@title", entry.Title);
-                    cmd.Parameters.AddWithValue("@content", entry.Content);
-                    cmd.Parameters.AddWithValue("@createDateTime", entry.CreateDateTime);
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private void Delete(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"DELETE FROM Journal WHERE id = @id";
-                    cmd.Parameters.AddWithValue("@id", id);
-
-                    cmd.ExecuteNonQuery();
-                }
             }
         }
     }

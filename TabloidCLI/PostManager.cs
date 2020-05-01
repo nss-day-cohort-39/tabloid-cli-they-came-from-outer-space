@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using TabloidCLI.Models;
+using TabloidCLI.Repositories;
 
 namespace TabloidCLI
 {
-    public class PostManager : DatabaseEntityManager, IUserInterfaceManager
+    public class PostManager : IUserInterfaceManager
     {
         private readonly IUserInterfaceManager _parentUI;
+        private PostRepository _postRepository;
 
-        public PostManager(IUserInterfaceManager parentUI, string connectionString) : base(connectionString)
+        public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
+            _postRepository = new PostRepository(connectionString);
         }
 
         public IUserInterfaceManager Execute()
@@ -48,7 +50,7 @@ namespace TabloidCLI
 
         private void List()
         {
-            List<Post> posts = GetAllPost();
+            List<Post> posts = _postRepository.GetAll();
             foreach (Post post in posts)
             {
                 Console.WriteLine(post);
@@ -78,15 +80,15 @@ namespace TabloidCLI
 
             post.Blog = ChooseBlog();
 
-            Insert(post);
+            _postRepository.Insert(post);
         }
 
         private Author ChooseAuthor()
         {
             Console.WriteLine("Who wrote this post?");
-            List<Author> authors = GetAllAuthors();
+            List<Author> authors = _postRepository.GetAllAuthors();
 
-            for (int i=0; i<authors.Count; i++)
+            for (int i = 0; i < authors.Count; i++)
             {
                 Author author = authors[i];
                 Console.WriteLine($" {i + 1}) {author.FullName}");
@@ -98,7 +100,7 @@ namespace TabloidCLI
             {
                 int choice = int.Parse(input);
                 return authors[choice - 1];
-            } 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Invalid Selection.");
@@ -115,9 +117,9 @@ namespace TabloidCLI
         {
             Console.WriteLine("Which journal post would you like to remove?");
 
-            List<Post> posts = GetAllPost();
+            List<Post> posts = _postRepository.GetAll();
 
-            for (int i=0; i<posts.Count; i++)
+            for (int i = 0; i < posts.Count; i++)
             {
                 Post post = posts[i];
                 Console.WriteLine($" {i + 1}) {post.Title}");
@@ -128,138 +130,11 @@ namespace TabloidCLI
             {
                 int choice = int.Parse(input);
                 Post postToDelete = posts[choice - 1];
-                Delete(postToDelete.Id);
-            } 
+                _postRepository.Delete(postToDelete.Id);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Invalid Selection. Won't remove any journal posts.");
-            }
-        }
-
-        private List<Post> GetAllPost()
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT p.id,
-                                               p.Title As PostTitle,
-                                               p.URL AS PostUrl,
-                                               p.PublishDateTime,
-                                               p.AuthorId,
-                                               p.BlogId,
-                                               a.FirstName,
-                                               a.LastName,
-                                               a.Bio,
-                                               b.Title AS BlogTitle,
-                                               b.URL AS BlogUrl
-                                          FROM Post p 
-                                               LEFT JOIN Author a on p.AuthorId = a.Id
-                                               LEFT JOIN Blog b on p.BlogId = b.Id ";
-
-                    List<Post> posts = new List<Post>();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Post post = new Post()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Title = reader.GetString(reader.GetOrdinal("PostTitle")),
-                            Url = reader.GetString(reader.GetOrdinal("PostUrl")),
-                            PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime")),
-                            Author = new Author()
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("AuthorId")),
-                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                                Bio = reader.GetString(reader.GetOrdinal("Bio")),
-                            },
-                            Blog = new Blog()
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("BlogId")),
-                                Title = reader.GetString(reader.GetOrdinal("BlogTitle")),
-                                Url = reader.GetString(reader.GetOrdinal("BlogUrl")),
-                            }
-                        };
-                        posts.Add(post);
-                    }
-
-                    reader.Close();
-
-                    return posts;
-                }
-            }
-        }
-
-        private List<Author> GetAllAuthors()
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT id,
-                                               FirstName,
-                                               LastName,
-                                               Bio
-                                          FROM Author";
-
-                    List<Author> authors = new List<Author>();
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        authors.Add(new Author()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            Bio = reader.GetString(reader.GetOrdinal("Bio")),
-                        });
-                    }
-
-                    reader.Close();
-
-                    return authors;
-                }
-            }
-        }
-
-
-        private void Insert(Post post)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"INSERT INTO Post (Title, URL, PublishDateTime, AuthorId, BlogId )
-                                                  VALUES (@title, @url, @publishDateTime, @authorId, @blogId)";
-                    cmd.Parameters.AddWithValue("@title", post.Title);
-                    cmd.Parameters.AddWithValue("@url", post.Url);
-                    cmd.Parameters.AddWithValue("@publishDateTime", post.PublishDateTime);
-                    cmd.Parameters.AddWithValue("@authorId", post.Author.Id);
-                    cmd.Parameters.AddWithValue("@blogId", post.Blog.Id);
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private void Delete(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"DELETE FROM Post WHERE id = @id";
-                    cmd.Parameters.AddWithValue("@id", id);
-
-                    cmd.ExecuteNonQuery();
-                }
             }
         }
     }

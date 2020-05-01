@@ -1,4 +1,5 @@
 ﻿using System;
+using TabloidCLI.Repositories;
 
 namespace TabloidCLI
 {

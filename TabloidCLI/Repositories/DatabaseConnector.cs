@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TabloidCLI
+namespace TabloidCLI.Repositories
 {
-    public class DatabaseEntityManager
+    public class DatabaseConnector
     {
         private readonly string _connectionString;
         protected SqlConnection Connection => new SqlConnection(_connectionString);
 
-        public DatabaseEntityManager(string connectionString)
+        public DatabaseConnector(string connectionString)
         {
             _connectionString = connectionString;
         }

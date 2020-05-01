@@ -1,25 +1,19 @@
-﻿using System;
-
-namespace TabloidCLI
+﻿namespace TabloidCLI
 {
     class Program
     {
         static void Main(string[] args)
         {
-            UIManager ui = new UIManager();
-            ui.ShowHeader();
+            MainMenuManager mainMenu = new MainMenuManager();
+            mainMenu.ShowHeader();
 
-            UICommand command = ui.MainMenu();
-            while (command != UICommand.ExitProgram)
+            // MainMenuManager implements the IUserInterfaceManager interface
+            IUserInterfaceManager ui = mainMenu;
+            while (ui != null)
             {
-                switch (command)
-                {
-                    case UICommand.JournalMainMenu:
-                        command = ui.JournalMenu();
-                        break;
-                }
-
-                command = ui.MainMenu();
+                // Each call to Execute will return the next IUserInterfaceManager we should execute
+                // When it returns null, we should exit the program;
+                ui = ui.Execute();
             }
         }
     }

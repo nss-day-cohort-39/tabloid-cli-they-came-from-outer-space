@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TabloidCLI.Models;
 
-namespace TabloidCLI
+namespace TabloidCLI.UserInterfaceManagers
 {
     public class TagManager : IUserInterfaceManager
     {

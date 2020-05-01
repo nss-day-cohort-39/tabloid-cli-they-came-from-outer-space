@@ -1,11 +1,11 @@
 ﻿using System;
-using TabloidCLI.Repositories;
 
-namespace TabloidCLI
+namespace TabloidCLI.UserInterfaceManagers
 {
     public class MainMenuManager : IUserInterfaceManager
     {
-        private const string CONNECTION_STRING = @"Data Source=localhost\SQLEXPRESS;Database=TabloidCLI;Integrated Security=True";
+        private const string CONNECTION_STRING = 
+            @"Data Source=localhost\SQLEXPRESS;Database=TabloidCLI;Integrated Security=True";
 
         public void ShowHeader()
         {
@@ -33,7 +33,7 @@ namespace TabloidCLI
             {
                 case "1": return new JournalManager(this, CONNECTION_STRING);
                 case "2": return this;
-                case "3": return this;
+                case "3": return new AuthorManager(this, CONNECTION_STRING);
                 case "4": return new PostManager(this, CONNECTION_STRING);
                 case "5": return new TagManager(this, CONNECTION_STRING);
                 case "0": return null;

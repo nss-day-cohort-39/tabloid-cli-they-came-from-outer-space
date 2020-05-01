@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using TabloidCLI.Models;
 using TabloidCLI.Repositories;
 
-namespace TabloidCLI
+namespace TabloidCLI.UserInterfaceManagers
 {
     public class PostManager : IUserInterfaceManager
     {
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
+        private AuthorRepository _authorRepository;
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
             _postRepository = new PostRepository(connectionString);
+            _authorRepository = new AuthorRepository(connectionString);
         }
 
         public IUserInterfaceManager Execute()
@@ -86,7 +88,7 @@ namespace TabloidCLI
         private Author ChooseAuthor()
         {
             Console.WriteLine("Who wrote this post?");
-            List<Author> authors = _postRepository.GetAllAuthors();
+            List<Author> authors = _authorRepository.GetAll();
 
             for (int i = 0; i < authors.Count; i++)
             {

@@ -37,7 +37,8 @@ Or the user has returned to the main menu from a child menu
 - Author Management
 - Post Management
 - Tag Management
-- Exit 
+- Search by Tag
+- Exit
 
 
 
@@ -117,7 +118,7 @@ As an introspective person, I would like the ability to edit my journal entries 
 
 **Given** the user has been prompted to enter a new value for a property  
 **When** the user hits `enter` without typing anything  
-Or the user only enters spaces  
+**Or When** the user only enters spaces  
 **Then** the property's value should NOT be changed  
 
 > **NOTE:** the user should NOT be able to change the creation date
@@ -212,7 +213,7 @@ As a blog connoisseur I would like to edit a blog author’s details so that I c
 
 **Given** the user has been prompted to enter a new value for a property  
 **When** the user hits `enter` without typing anything  
-Or the user only enters spaces  
+**Or When** the user only enters spaces  
 **Then** the property's value should NOT be changed  
 
 
@@ -335,7 +336,7 @@ As a blog connoisseur I would like to be able to edit blog’s details so that I
 
 **Given** the user has been prompted to enter a new value for a property  
 **When** the user hits `enter` without typing anything  
-Or the user only enters spaces  
+**Or When** the user only enters spaces  
 **Then** the property's value should NOT be changed  
 
 
@@ -477,7 +478,7 @@ As a post connoisseur I would like to be able to edit post’s details so that I
 
 **Given** the user has been prompted to enter a new value for a property  
 **When** the user hits `enter` without typing anything  
-Or the user only enters spaces  
+**Or When** the user only enters spaces  
 **Then** the property's value should NOT be changed  
 
 > **NOTE:** Use selection lists to provide the ability to change the Author and Blog
@@ -556,7 +557,7 @@ The menu should contain the following options:
 
 
 
-## Add Note
+### Add Note
 
 As a post connoisseur I would like to add a note to a blog post so that I can record my thoughts about the post.
 
@@ -596,3 +597,81 @@ As a post connoisseur I would like to be able to remove a Note associated with a
 **When** they enter the selection and hit enter  
 **Then** the note should be removed from the database  
 
+
+
+## Tags
+
+### Add Tag
+
+As an application user I would like to be able to add a new keyword that I can use to tag a blog, author or post throughout the application so that I can have access to the keywords I think are appropriate.
+
+**Given** the user is viewing the Tag Management menu  
+**When** they select the option to add a tag  
+**Then** they should be prompted to enter the new tag's name  
+
+
+
+### List Tags
+
+As an application user I would like to be able to view a list of keywords that I might use to tag blogs, authors and posts so that I can determine if there are any missing or any that I no longer want.
+
+**Given** the user is viewing the Tag Management menu  
+**When** they select the option to list tags  
+**Then** they should see each tag's name  
+
+
+
+### Edit Tag
+
+As a post connoisseur I would like to be able to edit tag so that I can use a more appropriate value.
+
+**Given** the user is viewing the Tag Management menu  
+**When** they select the option to edit a tag  
+**Then** they should be presented with a list of tags to choose from  
+
+**Given** the user chooses a tag  
+**When** they enter the selection and hit enter  
+**Then** the user should be given the ability to enter new information for the tag's name  
+
+**Given** the user has been prompted to enter a new value for a property  
+**When** the user hits `enter` without typing anything  
+**Or When** the user only enters spaces  
+**Then** the property's value should NOT be changed  
+
+
+
+### Remove Tag
+
+As a post connoisseur I would like to be able to remove a tag when I feel it is no longer needed.
+
+**Given** the user is viewing the Tag Management menu  
+**When** they select the option to remove a tag  
+**Then** they should be presented with a list of tags to choose from  
+
+**Given** the user chooses a post  
+**When** they enter the selection and hit enter  
+**Then** the tag should be removed from the database  
+
+
+
+## Search by Tag
+
+As a blog connoisseur I would like the ability to search for blogs, authors anb posts by tagged keyword so that I can find wat I'm looking for more easily.
+
+**Given** the user has is on the Main menu  
+**When** they select the search by tag option  
+**Then** they should be prompted to enter a tag name  
+
+**Given** the user has entered a tag name  
+**When** there is no tag with that name  
+**Then** the user should see a message informing them that the tag was not found
+
+**Given** the user has entered a tag name  
+**When** there are no blogs, authors or posts associated with that tag
+**Then** the user should see a message informing them that no blogs, authors or posts have that tag
+
+**Given** the user has entered a tag name  
+**When** there are blogs, authors and/or posts associated with that tag
+**Then** the user should see a list of the blogs associated with the tag
+**And** the user should see a list of the authors associated with the tag
+**And** the user should see a list of the posts associated with the tag

@@ -74,7 +74,7 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             if (prompt == null)
             {
-                prompt = "Please choose an Author.";
+                prompt = "Please choose an Author:";
             }
 
             Console.WriteLine(prompt);

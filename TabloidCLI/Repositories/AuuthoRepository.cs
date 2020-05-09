@@ -116,9 +116,27 @@ namespace TabloidCLI
             }
         }
 
-        public void Update(Author entry)
+        public void Update(Author author)
         {
-            throw new NotImplementedException();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE Author 
+                                           SET FirstName = @firstName,
+                                               LastName = @lastName,
+                                               bio = @bio
+                                         WHERE id = @id";
+
+                    cmd.Parameters.AddWithValue("@firstName", author.FirstName);
+                    cmd.Parameters.AddWithValue("@lastName", author.LastName);
+                    cmd.Parameters.AddWithValue("@bio", author.Bio);
+                    cmd.Parameters.AddWithValue("@id", author.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public void Delete(int id)

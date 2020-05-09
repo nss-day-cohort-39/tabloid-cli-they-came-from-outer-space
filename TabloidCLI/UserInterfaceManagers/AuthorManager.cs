@@ -23,7 +23,8 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 1) List Authors");
             Console.WriteLine(" 2) Author Details");
             Console.WriteLine(" 3) Add Author");
-            Console.WriteLine(" 4) Remove Author");
+            Console.WriteLine(" 4) Edit Author");
+            Console.WriteLine(" 5) Remove Author");
             Console.WriteLine(" 0) Return to Main Menu");
 
             Console.Write("> ");
@@ -47,6 +48,9 @@ namespace TabloidCLI.UserInterfaceManagers
                     Add();
                     return this;
                 case "4":
+                    Edit();
+                    return this;
+                case "5":
                     Remove();
                     return this;
                 case "0":
@@ -66,9 +70,14 @@ namespace TabloidCLI.UserInterfaceManagers
             }
         }
 
-        private Author Choose()
+        private Author Choose(string prompt = null)
         {
-            Console.WriteLine("Which author would you like to see?");
+            if (prompt == null)
+            {
+                prompt = "Please choose an Author.";
+            }
+
+            Console.WriteLine(prompt);
 
             List<Author> authors = _authorRepository.GetAll();
 
@@ -77,6 +86,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Author author = authors[i];
                 Console.WriteLine($" {i + 1}) {author.FullName}");
             }
+            Console.WriteLine("> ");
 
             string input = Console.ReadLine();
             try
@@ -106,6 +116,37 @@ namespace TabloidCLI.UserInterfaceManagers
             author.Bio = Console.ReadLine();
 
             _authorRepository.Insert(author);
+        }
+
+        private void Edit()
+        {
+            Author authorToEdit = Choose("Which author would you like to edit?");
+            if (authorToEdit == null)
+            {
+                return;
+            }
+
+            Console.WriteLine();
+            Console.Write("New first name (blank to leave unchanged: ");
+            string firstName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(firstName))
+            {
+                authorToEdit.FirstName = firstName;
+            }
+            Console.Write("New last name (blank to leave unchanged: ");
+            string lastName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                authorToEdit.LastName = lastName;
+            }
+            Console.Write("New bio (blank to leave unchanged: ");
+            string bio = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(bio))
+            {
+                authorToEdit.Bio = bio;
+            }
+
+            _authorRepository.Update(authorToEdit);
         }
 
         private void Remove()

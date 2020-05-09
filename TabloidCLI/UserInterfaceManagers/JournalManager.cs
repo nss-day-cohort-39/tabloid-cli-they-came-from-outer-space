@@ -20,7 +20,8 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine("Journal Menu");
             Console.WriteLine(" 1) List Entries");
             Console.WriteLine(" 2) Add Entry");
-            Console.WriteLine(" 3) Remove Entry");
+            Console.WriteLine(" 3) Edit Entry");
+            Console.WriteLine(" 4) Remove Entry");
             Console.WriteLine(" 0) Return to Main Menu");
 
             Console.Write("> ");
@@ -34,6 +35,9 @@ namespace TabloidCLI.UserInterfaceManagers
                     Add();
                     return this;
                 case "3":
+                    Edit();
+                    return this;
+                case "4":
                     Remove();
                     return this;
                 case "0":
@@ -74,6 +78,48 @@ namespace TabloidCLI.UserInterfaceManagers
             entry.CreateDateTime = DateTime.Now;
 
             _journalRepository.Insert(entry);
+        }
+
+        private void Edit()
+        {
+            Console.WriteLine("Which journal entry would you like to edit?");
+
+            List<Journal> entries = _journalRepository.GetAll();
+
+            for (int i = 0; i < entries.Count; i++)
+            {
+                Journal entry = entries[i];
+                Console.WriteLine($" {i + 1}) {entry.Title}");
+            }
+
+            Console.Write("> ");
+            string input = Console.ReadLine();
+            try
+            {
+                int choice = int.Parse(input);
+                Journal entryToEdit = entries[choice - 1];
+
+                Console.WriteLine();
+                Console.Write("New title (blank to leave unchanged): ");
+                string title = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    entryToEdit.Title = title;
+                }
+
+                Console.WriteLine("New content (blank to leave unchanged): ");
+                string content = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    entryToEdit.Content = content;
+                }
+
+                _journalRepository.Update(entryToEdit);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection");
+            }
         }
 
         private void Remove()

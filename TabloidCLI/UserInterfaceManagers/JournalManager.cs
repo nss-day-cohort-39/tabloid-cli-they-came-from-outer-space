@@ -48,6 +48,37 @@ namespace TabloidCLI.UserInterfaceManagers
             }
         }
 
+        private Journal Choose(string prompt = null)
+        {
+            if (prompt == null)
+            {
+                prompt = "Please choose a journal entry:";
+            }
+            Console.WriteLine(prompt);
+
+            List<Journal> entries = _journalRepository.GetAll();
+            for (int i = 0; i < entries.Count; i++)
+            {
+                Journal entry = entries[i];
+                Console.WriteLine($" {i + 1}) {entry.Title}");
+            }
+
+            Console.Write("> ");
+            string input = Console.ReadLine();
+            Journal chosen = null;
+            try
+            {
+                int choice = int.Parse(input);
+                chosen = entries[choice - 1];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection");
+            }
+
+            return chosen;
+        }
+ 
         private void List()
         {
             List<Journal> entries = _journalRepository.GetAll();
@@ -82,68 +113,36 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private void Edit()
         {
-            Console.WriteLine("Which journal entry would you like to edit?");
-
-            List<Journal> entries = _journalRepository.GetAll();
-
-            for (int i = 0; i < entries.Count; i++)
+            Journal entryToEdit = Choose("Which journal entry would you like to edit?");
+            if (entryToEdit == null)
             {
-                Journal entry = entries[i];
-                Console.WriteLine($" {i + 1}) {entry.Title}");
+                return;
             }
 
-            Console.Write("> ");
-            string input = Console.ReadLine();
-            try
+            Console.WriteLine();
+            Console.Write("New title (blank to leave unchanged): ");
+            string title = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(title))
             {
-                int choice = int.Parse(input);
-                Journal entryToEdit = entries[choice - 1];
-
-                Console.WriteLine();
-                Console.Write("New title (blank to leave unchanged): ");
-                string title = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(title))
-                {
-                    entryToEdit.Title = title;
-                }
-
-                Console.WriteLine("New content (blank to leave unchanged): ");
-                string content = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    entryToEdit.Content = content;
-                }
-
-                _journalRepository.Update(entryToEdit);
+                entryToEdit.Title = title;
             }
-            catch (Exception ex)
+
+            Console.WriteLine("New content (blank to leave unchanged): ");
+            string content = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(content))
             {
-                Console.WriteLine("Invalid Selection");
+                entryToEdit.Content = content;
             }
+
+            _journalRepository.Update(entryToEdit);
         }
 
         private void Remove()
         {
-            Console.WriteLine("Which journal entry would you like to remove?");
-
-            List<Journal> entries = _journalRepository.GetAll();
-
-            for (int i = 0; i < entries.Count; i++)
+            Journal entryToDelete = Choose("Which journal entry would you like to remove?");
+            if (entryToDelete != null)
             {
-                Journal entry = entries[i];
-                Console.WriteLine($" {i + 1}) {entry.Title}");
-            }
-
-            string input = Console.ReadLine();
-            try
-            {
-                int choice = int.Parse(input);
-                Journal entryToDelete = entries[choice - 1];
                 _journalRepository.Delete(entryToDelete.Id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Invalid Selection. Won't remove any journal entries.");
             }
         }
     }

@@ -1,3 +1,11 @@
+USE [master]
+
+IF db_id('TabloidCLI') IS NULl
+BEGIN
+    CREATE DATABASE [TabloidCLI]
+END;
+GO
+
 use [TabloidCLI]
 go
 

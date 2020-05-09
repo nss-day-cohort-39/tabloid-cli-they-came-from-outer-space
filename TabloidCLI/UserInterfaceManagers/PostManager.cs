@@ -10,21 +10,24 @@ namespace TabloidCLI.UserInterfaceManagers
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
         private AuthorRepository _authorRepository;
+        private string _connectionString;
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
             _postRepository = new PostRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
+            _connectionString = connectionString;
         }
 
         public IUserInterfaceManager Execute()
         {
             Console.WriteLine("Post Menu");
             Console.WriteLine(" 1) List Posts");
-            Console.WriteLine(" 2) Add Post");
-            Console.WriteLine(" 3) Edit Post");
-            Console.WriteLine(" 4) Remove Post");
+            Console.WriteLine(" 2) Post Details");
+            Console.WriteLine(" 3) Add Post");
+            Console.WriteLine(" 4) Edit Post");
+            Console.WriteLine(" 5) Remove Post");
             Console.WriteLine(" 0) Return to Main Menu");
 
             Console.Write("> ");
@@ -35,11 +38,20 @@ namespace TabloidCLI.UserInterfaceManagers
                     List();
                     return this;
                 case "2":
+                    Post post = Choose();
+                    if (post == null)
+                    {
+                        return this;
+                    } else
+                    {
+                        return new PostDetailManager(this, _connectionString, post.Id);
+                    }
+                case "3":
                     Add();
                     return this;
-                case "3":
-                    return this;
                 case "4":
+                    return this;
+                case "5":
                     Remove();
                     return this;
                 case "0":
@@ -50,6 +62,36 @@ namespace TabloidCLI.UserInterfaceManagers
             }
         }
 
+        private Post Choose(string prompt = null)
+        {
+            if (prompt == null)
+            {
+                prompt = "Please choose a post:";
+            }
+            Console.WriteLine(prompt);
+
+            List<Post> posts = _postRepository.GetAll();
+            for (int i = 0; i < posts.Count; i++)
+            {
+                Post post = posts[i];
+                Console.WriteLine($" {i + 1}) {post.Title}");
+            }
+
+            string input = Console.ReadLine();
+            Post chosen = null;
+            try
+            {
+                int choice = int.Parse(input);
+                chosen = posts[choice - 1];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Invalid Selection");
+            }
+
+            return chosen;
+        }
+ 
         private void List()
         {
             List<Post> posts = _postRepository.GetAll();

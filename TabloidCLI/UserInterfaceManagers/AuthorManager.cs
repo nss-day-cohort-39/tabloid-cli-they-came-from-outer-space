@@ -151,26 +151,10 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private void Remove()
         {
-            Console.WriteLine("Which author would you like to remove?");
-
-            List<Author> authors = _authorRepository.GetAll();
-
-            for (int i = 0; i < authors.Count; i++)
+            Author authorToDelete = Choose("Which author would you like to remove?");
+            if (authorToDelete != null)
             {
-                Author author = authors[i];
-                Console.WriteLine($" {i + 1}) {author.FullName}");
-            }
-
-            string input = Console.ReadLine();
-            try
-            {
-                int choice = int.Parse(input);
-                Author authorToDelete = authors[choice - 1];
                 _authorRepository.Delete(authorToDelete.Id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Invalid Selection. Won't remove any author authors.");
             }
         }
     }

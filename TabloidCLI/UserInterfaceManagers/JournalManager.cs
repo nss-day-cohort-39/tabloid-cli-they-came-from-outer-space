@@ -48,7 +48,7 @@ namespace TabloidCLI.UserInterfaceManagers
             }
         }
 
-        private Journal Choose(string prompt = null)
+        private JournalEntry Choose(string prompt = null)
         {
             if (prompt == null)
             {
@@ -56,16 +56,16 @@ namespace TabloidCLI.UserInterfaceManagers
             }
             Console.WriteLine(prompt);
 
-            List<Journal> entries = _journalRepository.GetAll();
+            List<JournalEntry> entries = _journalRepository.GetAll();
             for (int i = 0; i < entries.Count; i++)
             {
-                Journal entry = entries[i];
+                JournalEntry entry = entries[i];
                 Console.WriteLine($" {i + 1}) {entry.Title}");
             }
 
             Console.Write("> ");
             string input = Console.ReadLine();
-            Journal chosen = null;
+            JournalEntry chosen = null;
             try
             {
                 int choice = int.Parse(input);
@@ -81,8 +81,8 @@ namespace TabloidCLI.UserInterfaceManagers
  
         private void List()
         {
-            List<Journal> entries = _journalRepository.GetAll();
-            foreach (Journal entry in entries)
+            List<JournalEntry> entries = _journalRepository.GetAll();
+            foreach (JournalEntry entry in entries)
             {
                 Console.WriteLine(entry);
             }
@@ -92,7 +92,7 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             Console.WriteLine("New Journal Entry");
 
-            Journal entry = new Journal();
+            JournalEntry entry = new JournalEntry();
 
             Console.Write("Title: ");
             entry.Title = Console.ReadLine();
@@ -113,7 +113,7 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private void Edit()
         {
-            Journal entryToEdit = Choose("Which journal entry would you like to edit?");
+            JournalEntry entryToEdit = Choose("Which journal entry would you like to edit?");
             if (entryToEdit == null)
             {
                 return;
@@ -139,7 +139,7 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private void Remove()
         {
-            Journal entryToDelete = Choose("Which journal entry would you like to remove?");
+            JournalEntry entryToDelete = Choose("Which journal entry would you like to remove?");
             if (entryToDelete != null)
             {
                 _journalRepository.Delete(entryToDelete.Id);

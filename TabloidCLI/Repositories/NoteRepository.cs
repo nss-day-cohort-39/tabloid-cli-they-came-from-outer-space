@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
 using TabloidCLI.Models;
-using TabloidCLI.Repositories;
 
-namespace TabloidCLI
+namespace TabloidCLI.Repositories
 {
-    public class JournalRepository : DatabaseConnector, IRepository<JournalEntry>
+    public class NoteRepository : DatabaseConnector, IRepository<Note>
     {
-        public JournalRepository(string connectionString) : base(connectionString) { }
+        public NoteRepository(string connectionString) : base(connectionString) { }
 
-        public List<JournalEntry> GetAll()
+        public List<Note> GetAll()
         {
             using (SqlConnection conn = Connection)
             {
@@ -21,21 +19,56 @@ namespace TabloidCLI
                                                Title,
                                                Content,
                                                CreateDatetime
-                                          FROM Journal";
+                                          FROM Note";
 
-                    List<JournalEntry> entries = new List<JournalEntry>();
+                    List<Note> entries = new List<Note>();
 
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        JournalEntry entry = new JournalEntry()
+                        Note note = new Note()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Content = reader.GetString(reader.GetOrdinal("Content")),
                             CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                         };
-                        entries.Add(entry);
+                        entries.Add(note);
+                    }
+
+                    reader.Close();
+
+                    return entries;
+                }
+            }
+        }
+        public List<Note> GetByPost(int postId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT id,
+                                               Title,
+                                               Content,
+                                               CreateDatetime
+                                          FROM Note
+                                         WHERE PostId = @postId";
+                    cmd.Parameters.AddWithValue("@postId", postId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Note> entries = new List<Note>();
+                    while (reader.Read())
+                    {
+                        Note note = new Note()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Content = reader.GetString(reader.GetOrdinal("Content")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                        };
+                        entries.Add(note);
                     }
 
                     reader.Close();
@@ -45,7 +78,8 @@ namespace TabloidCLI
             }
         }
 
-        public JournalEntry Get(int id)
+
+        public Note Get(int id)
         {
             using (SqlConnection conn = Connection)
             {
@@ -56,16 +90,16 @@ namespace TabloidCLI
                                                Title,
                                                Content,
                                                CreateDatetime
-                                          FROM Journal
+                                          FROM Note
                                          WHERE id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
-                    JournalEntry entry = null;
+                    Note note = null;
 
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
-                        entry = new JournalEntry()
+                        note = new Note()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Title = reader.GetString(reader.GetOrdinal("Title")),
@@ -76,48 +110,33 @@ namespace TabloidCLI
 
                     reader.Close();
 
-                    return entry;
+                    return note;
                 }
             }
         }
 
-        public void Insert(JournalEntry entry)
+        public void Insert(Note note)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO Journal (Title, Content, CreateDatetime )
-                                                     VALUES (@title, @content, @createDateTime)";
-                    cmd.Parameters.AddWithValue("@title", entry.Title);
-                    cmd.Parameters.AddWithValue("@content", entry.Content);
-                    cmd.Parameters.AddWithValue("@createDateTime", entry.CreateDateTime);
+                    cmd.CommandText = @"INSERT INTO Note (Title, Content, CreateDatetime, PostId)
+                                                  VALUES (@title, @content, @createDateTime, @postId)";
+                    cmd.Parameters.AddWithValue("@title", note.Title);
+                    cmd.Parameters.AddWithValue("@content", note.Content);
+                    cmd.Parameters.AddWithValue("@createDateTime", note.CreateDateTime);
+                    cmd.Parameters.AddWithValue("@postId", note.Post.Id);
 
                     cmd.ExecuteNonQuery();
                 }
             }
         }
-
-        public void Update(JournalEntry entry)
+ 
+        public void Update(Note note)
         {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"UPDATE Journal 
-                                           SET Title = @title, 
-                                               Content = @content
-                                         WHERE Id = @id";
-                                                                                
-                    cmd.Parameters.AddWithValue("@title", entry.Title);
-                    cmd.Parameters.AddWithValue("@content", entry.Content);
-                    cmd.Parameters.AddWithValue("@id", entry.Id);
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            throw new System.NotImplementedException();
         }
 
         public void Delete(int id)
@@ -127,7 +146,7 @@ namespace TabloidCLI
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"DELETE FROM Journal WHERE id = @id";
+                    cmd.CommandText = @"DELETE FROM Note WHERE id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     cmd.ExecuteNonQuery();

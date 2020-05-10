@@ -25,7 +25,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 3) Add Author");
             Console.WriteLine(" 4) Edit Author");
             Console.WriteLine(" 5) Remove Author");
-            Console.WriteLine(" 0) Return to Main Menu");
+            Console.WriteLine(" 0) Go Back");
 
             Console.Write("> ");
             string choice = Console.ReadLine();

@@ -26,7 +26,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 1) List Notes");
             Console.WriteLine(" 2) Add Note");
             Console.WriteLine(" 3) Remove Note");
-            Console.WriteLine(" 0) Return to Main Menu");
+            Console.WriteLine(" 0) Go Back");
 
             Console.Write("> ");
             string choice = Console.ReadLine();

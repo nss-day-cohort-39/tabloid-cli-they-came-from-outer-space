@@ -10,6 +10,7 @@ namespace TabloidCLI.UserInterfaceManagers
         private readonly IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
         private AuthorRepository _authorRepository;
+        private BlogRepository _blogRepository;
         private string _connectionString;
 
         public PostManager(IUserInterfaceManager parentUI, string connectionString)
@@ -17,6 +18,7 @@ namespace TabloidCLI.UserInterfaceManagers
             _parentUI = parentUI;
             _postRepository = new PostRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
+            _blogRepository = new BlogRepository(connectionString);
             _connectionString = connectionString;
         }
 
@@ -42,7 +44,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     if (post == null)
                     {
                         return this;
-                    } else
+                    } 
+                    else
                     {
                         return new PostDetailManager(this, _connectionString, post.Id);
                     }
@@ -50,6 +53,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     Add();
                     return this;
                 case "4":
+                    Edit();
                     return this;
                 case "5":
                     Remove();
@@ -76,6 +80,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Post post = posts[i];
                 Console.WriteLine($" {i + 1}) {post.Title}");
             }
+            Console.Write("> ");
 
             string input = Console.ReadLine();
             Post chosen = null;
@@ -99,6 +104,7 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 Console.WriteLine(post);
             }
+            Console.WriteLine();
         }
 
         private void Add()
@@ -125,6 +131,59 @@ namespace TabloidCLI.UserInterfaceManagers
             post.Blog = ChooseBlog();
 
             _postRepository.Insert(post);
+        }
+
+        private void Edit()
+        {
+            Post post = Choose("Which post would you like to edit?");
+            if (post == null)
+            {
+                return;
+            }
+
+            Console.Write("New title (blank to leave uncahnged): ");
+            string title = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                post.Title = title;
+            }
+
+            Console.Write("New URL (blank to leave unchanged): ");
+            string url = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                post.Url = url;
+            }
+
+            Console.Write("New published date (blank to leave unchanged): ");
+            string stringPublishDateTime = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(stringPublishDateTime))
+            {
+                post.PublishDateTime = DateTime.Parse(stringPublishDateTime);
+            }
+
+            Author author = ChooseAuthor();
+            if (author != null)
+            {
+                post.Author = author;
+            }
+
+            Blog blog = ChooseBlog();
+            if (blog != null)
+            {
+                post.Blog = blog;
+            }
+
+            _postRepository.Update(post);
+        }
+
+        private void Remove()
+        {
+            Post postToDelete = Choose("Which journal post would you like to remove?");
+            if (postToDelete != null)
+            {
+                _postRepository.Delete(postToDelete.Id);
+            }
         }
 
         private Author ChooseAuthor()
@@ -154,32 +213,28 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private Blog ChooseBlog()
         {
-            return new Blog() { Id = 1 };
-        }
+            Console.WriteLine("Whee was this post published?");
+            List<Blog> blogs = _blogRepository.GetAll();
 
-        private void Remove()
-        {
-            Console.WriteLine("Which journal post would you like to remove?");
-
-            List<Post> posts = _postRepository.GetAll();
-
-            for (int i = 0; i < posts.Count; i++)
+            for (int i = 0; i < blogs.Count; i++)
             {
-                Post post = posts[i];
-                Console.WriteLine($" {i + 1}) {post.Title}");
+                Blog blog = blogs[i];
+                Console.WriteLine($" {i + 1}) {blog.Title}");
             }
 
+            Console.Write("> ");
             string input = Console.ReadLine();
             try
             {
                 int choice = int.Parse(input);
-                Post postToDelete = posts[choice - 1];
-                _postRepository.Delete(postToDelete.Id);
+                return blogs[choice - 1];
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Invalid Selection. Won't remove any journal posts.");
+                Console.WriteLine("Invalid Selection.");
+                return null;
             }
         }
+
     }
 }

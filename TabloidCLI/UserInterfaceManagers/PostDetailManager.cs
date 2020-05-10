@@ -108,6 +108,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Console.WriteLine($" {i + 1}) {tag.Name}");
             }
 
+            Console.WriteLine("> ");
             string input = Console.ReadLine();
             try
             {

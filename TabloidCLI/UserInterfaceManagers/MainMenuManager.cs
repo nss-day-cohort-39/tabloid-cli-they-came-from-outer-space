@@ -37,7 +37,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 case "3": return new AuthorManager(this, CONNECTION_STRING);
                 case "4": return new PostManager(this, CONNECTION_STRING);
                 case "5": return new TagManager(this, CONNECTION_STRING);
-                case "6": return this;
+                case "6": return new SearchManager(this, CONNECTION_STRING);
                 case "0": return null;
                 default:
                     Console.WriteLine("Invalid Selection");

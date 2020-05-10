@@ -25,7 +25,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine("Note Menu");
             Console.WriteLine(" 1) List Notes");
             Console.WriteLine(" 2) Add Note");
-            Console.WriteLine(" 4) Remove Note");
+            Console.WriteLine(" 3) Remove Note");
             Console.WriteLine(" 0) Return to Main Menu");
 
             Console.Write("> ");
@@ -38,7 +38,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 case "2":
                     Add();
                     return this;
-                case "4":
+                case "3":
                     Remove();
                     return this;
                 case "0":

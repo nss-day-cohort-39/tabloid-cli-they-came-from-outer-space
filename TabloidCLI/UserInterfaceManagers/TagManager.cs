@@ -22,7 +22,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 2) Add Tag");
             Console.WriteLine(" 3) Edit Tag");
             Console.WriteLine(" 4) Remove Tag");
-            Console.WriteLine(" 0) Return to Main Menu");
+            Console.WriteLine(" 0) Go Back");
 
             Console.Write("> ");
             string choice = Console.ReadLine();

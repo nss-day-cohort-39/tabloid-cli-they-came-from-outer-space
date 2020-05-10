@@ -21,7 +21,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 2) Search Authors");
             Console.WriteLine(" 3) Search Posts");
             Console.WriteLine(" 4) Search All");
-            Console.WriteLine(" 0) Return to Main Menu");
+            Console.WriteLine(" 0) Go Back");
 
             Console.Write("> ");
             string choice = Console.ReadLine();

@@ -30,7 +30,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.WriteLine(" 3) Add Post");
             Console.WriteLine(" 4) Edit Post");
             Console.WriteLine(" 5) Remove Post");
-            Console.WriteLine(" 0) Return to Main Menu");
+            Console.WriteLine(" 0) Go Back");
 
             Console.Write("> ");
             string choice = Console.ReadLine();

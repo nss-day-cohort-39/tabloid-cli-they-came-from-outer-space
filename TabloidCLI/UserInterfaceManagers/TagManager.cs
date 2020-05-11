@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using TabloidCLI.Models;
 
 namespace TabloidCLI.UserInterfaceManagers
 {
     public class TagManager : IUserInterfaceManager
     {
         private readonly IUserInterfaceManager _parentUI;
-        private TagRepository _tagRepository;
 
         public TagManager(IUserInterfaceManager parentUI, string connectionString)
         {
             _parentUI = parentUI;
-            _tagRepository = new TagRepository(connectionString);
         }
 
         public IUserInterfaceManager Execute()
@@ -50,84 +46,22 @@ namespace TabloidCLI.UserInterfaceManagers
 
         private void List()
         {
-            Console.WriteLine();
-            Console.WriteLine("All Tags");
-            List<Tag> tags = _tagRepository.GetAll();
-            foreach (Tag tag in tags)
-            {
-                Console.WriteLine(" " + tag);
-            }
-            Console.WriteLine();
+            throw new NotImplementedException();
         }
 
         private void Add()
         {
-            Console.WriteLine("New Tag");
-
-            Tag tag = new Tag();
-
-            Console.Write("> ");
-            tag.Name = Console.ReadLine();
-
-            _tagRepository.Insert(tag);
+            throw new NotImplementedException();
         }
 
         private void Edit()
         {
-            Console.WriteLine("Which tag would you like to edit?");
-
-            List<Tag> tags = _tagRepository.GetAll();
-
-            for (int i = 0; i < tags.Count; i++)
-            {
-                Tag tag = tags[i];
-                Console.WriteLine($" {i + 1}) {tag.Name}");
-            }
-
-            string input = Console.ReadLine();
-            try
-            {
-                int choice = int.Parse(input);
-                Tag tagToEdit = tags[choice - 1];
-
-                Console.Write("New value (blank will keep original) ");
-                string newValue = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(newValue))
-                {
-                    tagToEdit.Name = newValue;
-                    _tagRepository.Update(tagToEdit);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Invalid Selection. Won't edit any tags.");
-            }
+            throw new NotImplementedException();
         }
 
         private void Remove()
         {
-            Console.WriteLine("Which tag would you like to remove?");
-
-            List<Tag> tags = _tagRepository.GetAll();
-
-            for (int i = 0; i < tags.Count; i++)
-            {
-                Tag tag = tags[i];
-                Console.WriteLine($" {i + 1}) {tag.Name}");
-            }
-
-            Console.WriteLine("> ");
-            string input = Console.ReadLine();
-            try
-            {
-                int choice = int.Parse(input);
-                Tag tagToDelete = tags[choice - 1];
-                _tagRepository.Delete(tagToDelete.Id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Invalid Selection. Won't remove any tags.");
-            }
+            throw new NotImplementedException();
         }
     }
 }

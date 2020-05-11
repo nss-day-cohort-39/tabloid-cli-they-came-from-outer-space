@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using TabloidCLI.Models;
 using TabloidCLI.Repositories;
 
@@ -92,6 +91,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Tag tag = tags[i];
                 Console.WriteLine($" {i + 1}) {tag.Name}");
             }
+            Console.Write("> ");
 
             string input = Console.ReadLine();
             try
@@ -118,6 +118,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Tag tag = tags[i];
                 Console.WriteLine($" {i + 1}) {tag.Name}");
             }
+            Console.Write("> ");
 
             string input = Console.ReadLine();
             try

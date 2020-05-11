@@ -7,15 +7,6 @@ namespace TabloidCLI.UserInterfaceManagers
         private const string CONNECTION_STRING = 
             @"Data Source=localhost\SQLEXPRESS;Database=TabloidCLI;Integrated Security=True";
 
-        public void ShowHeader()
-        {
-            Console.Clear();
-            Console.WriteLine("Tabloid!");
-            Console.WriteLine("---------------------");
-            Console.WriteLine("Keeping up with all your Internet reading");
-            Console.WriteLine();
-        }
-
         public IUserInterfaceManager Execute()
         {
             Console.WriteLine("Main Menu");
@@ -32,13 +23,15 @@ namespace TabloidCLI.UserInterfaceManagers
             string choice = Console.ReadLine();
             switch (choice)
             {
-                case "1": return new JournalManager(this, CONNECTION_STRING);
-                case "2": return new BlogManager(this, CONNECTION_STRING);
+                case "1": throw new NotImplementedException();
+                case "2": throw new NotImplementedException();
                 case "3": return new AuthorManager(this, CONNECTION_STRING);
-                case "4": return new PostManager(this, CONNECTION_STRING);
+                case "4": throw new NotImplementedException();
                 case "5": return new TagManager(this, CONNECTION_STRING);
                 case "6": return new SearchManager(this, CONNECTION_STRING);
-                case "0": return null;
+                case "0":
+                    Console.WriteLine("Good bye");
+                    return null;
                 default:
                     Console.WriteLine("Invalid Selection");
                     return this;

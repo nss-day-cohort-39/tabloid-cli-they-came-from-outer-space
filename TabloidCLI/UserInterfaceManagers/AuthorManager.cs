@@ -86,7 +86,7 @@ namespace TabloidCLI.UserInterfaceManagers
                 Author author = authors[i];
                 Console.WriteLine($" {i + 1}) {author.FullName}");
             }
-            Console.WriteLine("> ");
+            Console.Write("> ");
 
             string input = Console.ReadLine();
             try

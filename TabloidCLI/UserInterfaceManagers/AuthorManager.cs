@@ -17,6 +17,10 @@ namespace TabloidCLI.UserInterfaceManagers
             _connectionString = connectionString;
         }
 
+        public AuthorManager()
+        {
+        }
+
         public IUserInterfaceManager Execute()
         {
             Console.WriteLine("Author Menu");

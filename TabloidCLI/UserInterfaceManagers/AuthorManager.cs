@@ -158,7 +158,14 @@ namespace TabloidCLI.UserInterfaceManagers
             Author authorToDelete = Choose("Which author would you like to remove?");
             if (authorToDelete != null)
             {
-                _authorRepository.Delete(authorToDelete.Id);
+                try
+                {
+                    _authorRepository.Delete(authorToDelete.Id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Invalid Selection. This author has corresponding posts that must be deleted first.");
+                }
             }
         }
     }

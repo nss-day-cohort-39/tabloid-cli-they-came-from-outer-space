@@ -117,7 +117,7 @@ namespace TabloidCLI.UserInterfaceManagers
             Console.Write("Url: ");
             post.Url = Console.ReadLine();
 
-            Console.Write("Publication Date (mm/dd/yyy): ");
+            Console.Write("Publication Date (mm/dd/yyyy): ");
             string date = Console.ReadLine();
             DateTime dateTime = Convert.ToDateTime(date);
             post.PublishDateTime = dateTime;
@@ -149,7 +149,7 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 postToEdit.Url = url;
             }
-            Console.Write("Change Date Published (blank to leave unchanged): ");
+            Console.Write("Change Date Published (mm/dd/yyyy OR blank to leave unchanged): ");
             string dateTime = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(dateTime))
             {

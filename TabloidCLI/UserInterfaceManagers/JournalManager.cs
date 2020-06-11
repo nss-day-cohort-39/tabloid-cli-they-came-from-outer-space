@@ -128,12 +128,6 @@ namespace TabloidCLI.UserInterfaceManagers
                 {
                     journalEntryToEdit.Content = content;
                 }
-                Console.Write("New Date Creation (blank to leave unchanged): ");
-                string dateTime = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(dateTime))
-                {
-                    journalEntryToEdit.CreateDateTime = DateTime.Now;
-                }
 
                 _journalRepository.Update(journalEntryToEdit);
             }

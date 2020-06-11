@@ -116,23 +116,23 @@ namespace TabloidCLI.UserInterfaceManagers
                 }
 
                 Console.WriteLine();
-                Console.Write("New Title (blank to leave unchanged: ");
+                Console.Write("New Title (blank to leave unchanged): ");
                 string title = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(title))
                 {
                     journalEntryToEdit.Title = title;
                 }
-                Console.Write("New Content (blank to leave unchanged: ");
+                Console.Write("New Content (blank to leave unchanged): ");
                 string content = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(content))
                 {
                     journalEntryToEdit.Content = content;
                 }
-                Console.Write("New Date Creation (blank to leave unchanged: ");
+                Console.Write("New Date Creation (blank to leave unchanged): ");
                 string dateTime = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(dateTime))
                 {
-                journalEntryToEdit.CreateDateTime = DateTime.Now;
+                    journalEntryToEdit.CreateDateTime = DateTime.Now;
                 }
 
                 _journalRepository.Update(journalEntryToEdit);

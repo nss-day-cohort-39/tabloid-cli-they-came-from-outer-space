@@ -12,5 +12,10 @@ namespace TabloidCLI.Models
         public DateTime PublishDateTime { get; set; }
         public Author Author { get; set; }
         public Blog Blog { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Title} ({Url}) ({PublishDateTime}) ({Author.FirstName} {Author.LastName}) ({Blog.Title})";
+        }
     }
 }

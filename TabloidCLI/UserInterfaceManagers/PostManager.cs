@@ -156,6 +156,18 @@ namespace TabloidCLI.UserInterfaceManagers
                 postToEdit.PublishDateTime = Convert.ToDateTime(dateTime);
             }
 
+            Author changeAuthor = ChooseAuthor("Change Author (blank to leave unchanged): ");
+            if (changeAuthor != null)
+            {
+                postToEdit.Author = changeAuthor;
+            }
+
+            Blog changeBlog = ChooseBlog("Change Blog (blank to leave unchanged): ");
+            if (changeBlog != null)
+            {
+                postToEdit.Blog = changeBlog;
+            }
+
             _postRepository.Update(postToEdit);
         }
 

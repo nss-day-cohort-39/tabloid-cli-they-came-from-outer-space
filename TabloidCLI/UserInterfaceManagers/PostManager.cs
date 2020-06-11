@@ -145,7 +145,7 @@ namespace TabloidCLI.UserInterfaceManagers
             string dateTime = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(dateTime))
             {
-                postToEdit.PublishDateTime = DateTime.Now;
+                postToEdit.PublishDateTime = Convert.ToDateTime(dateTime);
             }
 
             _postRepository.Update(postToEdit);

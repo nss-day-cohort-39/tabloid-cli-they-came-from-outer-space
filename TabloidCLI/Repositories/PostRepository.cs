@@ -75,21 +75,21 @@ namespace TabloidCLI
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT p.Id,
+                    cmd.CommandText = @"SELECT p.Id AS postId,
                                                p.Title,
                                                p.Url,
                                                p.PublishDateTime,
-                                               a.Id
+                                               a.Id AS authorId,
                                                a.FirstName,
                                                a.LastName,
                                                a.bio,
-                                               b.Id
+                                               b.Id AS blogId,
                                                b.Title,
                                                b.Url
                                           FROM Post p
-                                          LEFT JOIN Author a ON a.Id = p.Author
-                                          LEFT JOIN Blog b ON b.Id = p.Blog
-                                         WHERE Id = @id";
+                                          LEFT JOIN Author a ON a.Id = p.AuthorId
+                                          LEFT JOIN Blog b ON b.Id = p.BlogId
+                                         WHERE p.Id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
 
@@ -100,20 +100,20 @@ namespace TabloidCLI
                     {
                         post = new Post()
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("postId")),
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Url = reader.GetString(reader.GetOrdinal("Url")),
                             PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime")),
                             Author = new Author()
                             {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Id = reader.GetInt32(reader.GetOrdinal("authorId")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 Bio = reader.GetString(reader.GetOrdinal("Bio")),
                             },
                             Blog = new Blog()
                             {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Id = reader.GetInt32(reader.GetOrdinal("blogId")),
                                 Title = reader.GetString(reader.GetOrdinal("Title")),
                                 Url = reader.GetString(reader.GetOrdinal("Url")),
                             }

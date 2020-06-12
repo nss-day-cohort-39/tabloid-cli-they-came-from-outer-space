@@ -54,10 +54,10 @@ namespace TabloidCLI
                     cmd.CommandText = @"SELECT 
                                                Id,
                                                Title,
-                                               URL,
-                                               CreateDateTime
+                                               URL
                                           FROM Blog
                                          WHERE Id = @id";
+                                             
 
                     cmd.Parameters.AddWithValue("@id", id);
 
@@ -130,6 +130,39 @@ namespace TabloidCLI
                 {
                     cmd.CommandText = @"DELETE FROM Blog WHERE Id = @id";
                     cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void InsertTag(Blog blog, Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO BlogTag (BlogId, TagId)
+                                                       VALUES (@blogId, @tagId)";
+                    cmd.Parameters.AddWithValue("@blogId", blog.Id);
+                    cmd.Parameters.AddWithValue("@tagId", tag.Id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteTag(int blogId, int tagId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM BlogTAg 
+                                         WHERE BlogId = @blogid AND 
+                                               TagId = @tagId";
+                    cmd.Parameters.AddWithValue("@blogId", blogId);
+                    cmd.Parameters.AddWithValue("@tagId", tagId);
 
                     cmd.ExecuteNonQuery();
                 }

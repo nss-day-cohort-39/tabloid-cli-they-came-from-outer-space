@@ -41,58 +41,86 @@ namespace TabloidCLI
 
         public Tag Get(int id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Id AS TagId,
+                                               Name
+                                               FROM Tag
+                                               WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    Tag tag = null;
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        if (tag == null)
+                        {
+                            tag = new Tag()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("TagId")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                            };
+                        }
+                    }
+
+                    reader.Close();
+
+                    return tag;
+                }
+            }
         }
 
         public void Insert(Tag tag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(Tag tag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public SearchResults<Author> SearchAuthors(string tagName)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT a.id,
-                                               a.FirstName,
-                                               a.LastName,
-                                               a.Bio
-                                          FROM Author a
-                                               LEFT JOIN AuthorTag at on a.Id = at.AuthorId
-                                               LEFT JOIN Tag t on t.Id = at.TagId
-                                         WHERE t.Name LIKE @name";
-                    cmd.Parameters.AddWithValue("@name", $"%{tagName}%");
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    cmd.CommandText = @"INSERT INTO Tag (Name)
+                                                     VALUES (@name)";
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
 
-                    SearchResults<Author> results = new SearchResults<Author>();
-                    while (reader.Read())
-                    {
-                        Author author = new Author()
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            Bio = reader.GetString(reader.GetOrdinal("Bio")),
-                        };
-                        results.Add(author);
-                    }
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
-                    reader.Close();
+        public void Update(Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"UPDATE Tag
+                                           SET Name = @name
+                                         WHERE id = @id";
 
-                    return results;
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
+                    cmd.Parameters.AddWithValue("@id", tag.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void Delete(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"DELETE FROM Tag WHERE id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

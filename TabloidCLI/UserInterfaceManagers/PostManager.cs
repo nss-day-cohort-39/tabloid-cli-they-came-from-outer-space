@@ -47,7 +47,7 @@ namespace TabloidCLI.UserInterfaceManagers
                     }
                     else
                     {
-                        return new AuthorDetailManager(this, _connectionString, post.Id);
+                        return new PostDetailManager(this, _connectionString, post.Id);
                     }
                 case "3":
                     Add();

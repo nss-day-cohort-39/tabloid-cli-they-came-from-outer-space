@@ -6,7 +6,7 @@ using TabloidCLI.Repositories;
 
 namespace TabloidCLI.UserInterfaceManagers
 {
-    class PostDetailManager : IUserInterfaceManager
+    internal class PostDetailManager : IUserInterfaceManager
     {
         private IUserInterfaceManager _parentUI;
         private PostRepository _postRepository;
@@ -61,14 +61,16 @@ namespace TabloidCLI.UserInterfaceManagers
         {
             Post post = _postRepository.Get(_postId);
             Console.WriteLine($"Name: {post.Title} {post.Url} {post.PublishDateTime}");
+            Console.WriteLine("Tags:");
+            foreach (Tag tag in post.Tags)
+            {
+                Console.WriteLine(" " + tag);
+            }
             Console.WriteLine();
         }
 
         private void AddTag()
-        {
-            throw new NotImplementedException();
-
-            /*
+        {            
             Post post = _postRepository.Get(_postId);
 
             Console.WriteLine($"Which tag would you like to add to {post.Title}?");
@@ -92,14 +94,11 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 Console.WriteLine("Invalid Selection. Won't add any tags.");
             }
-            */
+            
         }
 
         private void RemoveTag()
         {
-            throw new NotImplementedException();
-
-            /*
             Post post = _postRepository.Get(_postId);
 
             Console.WriteLine($"Which tag would you like to remove from {post.Title}?");
@@ -123,7 +122,7 @@ namespace TabloidCLI.UserInterfaceManagers
             {
                 Console.WriteLine("Invalid Selection. Won't remove any tags.");
             }
-            */
+            
         }
 
         private void ManageNote()

@@ -44,7 +44,6 @@ namespace TabloidCLI
                             PublishDateTime = reader.GetDateTime(reader.GetOrdinal("PublishDateTime")),
                             Author = new Author()
                             {
-
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
@@ -52,7 +51,6 @@ namespace TabloidCLI
                             },
                             Blog = new Blog()
                             {
-
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 Title = reader.GetString(reader.GetOrdinal("BlogTitle")),
                                 Url = reader.GetString(reader.GetOrdinal("BlogUrl")),

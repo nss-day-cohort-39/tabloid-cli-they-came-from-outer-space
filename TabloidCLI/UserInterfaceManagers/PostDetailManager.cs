@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Text;
 using TabloidCLI.Models;
 using TabloidCLI.Repositories;
@@ -12,6 +13,7 @@ namespace TabloidCLI.UserInterfaceManagers
         private PostRepository _postRepository;
         private TagRepository _tagRepository;
         private AuthorRepository _authorRepository;
+        private string _connectionString;
         private int _postId;
 
         public PostDetailManager(IUserInterfaceManager parentUI, string connectionString, int postId)
@@ -21,6 +23,7 @@ namespace TabloidCLI.UserInterfaceManagers
             _tagRepository = new TagRepository(connectionString);
             _authorRepository = new AuthorRepository(connectionString);
             _postId = postId;
+            _connectionString = connectionString;
         }
 
         public IUserInterfaceManager Execute()
@@ -47,8 +50,8 @@ namespace TabloidCLI.UserInterfaceManagers
                     RemoveTag();
                     return this;
                 case "4":
-                    ManageNote();
-                    return this;
+                    return new NoteManager(this, _connectionString, _postId);
+                    
                 case "0":
                     return _parentUI;
                 default:
@@ -124,11 +127,6 @@ namespace TabloidCLI.UserInterfaceManagers
             }
             
         }
-
-        private void ManageNote()
-        {
-            throw new NotImplementedException();
-        }
-
+       
     }
 }

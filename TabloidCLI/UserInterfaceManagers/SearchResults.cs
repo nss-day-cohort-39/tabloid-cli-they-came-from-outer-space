@@ -24,8 +24,6 @@ namespace TabloidCLI.UserInterfaceManagers
 
         public void Display()
         {
-            Console.WriteLine(Title);
-
             foreach (T result in _results)
             {
                 Console.WriteLine(" " + result);
